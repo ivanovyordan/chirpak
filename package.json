@@ -1,0 +1,19 @@
+{
+  "name": "radio",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Yordan Ivanov <mail@ivanovyordan.com> (https://www.ivanovyordan.dev/)",
+  "license": "ISC",
+  "dependencies": {
+    "@turf/turf": "^6.5.0",
+    "cheerio": "^1.0.0-rc.10",
+    "csv-writer": "^1.6.0",
+    "node-fetch": "^3.0.0"
+  }
+}
