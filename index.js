@@ -4,7 +4,8 @@ import getPMR from "./pmr.js"
 import getRepeaters from "./repeaters/index.js"
 import getSimplex from "./simplex.js"
 
-const channels = [...getPMR(), ...await getRepeaters([24.7518, 42.1513]), ...getSimplex()]
+const coordinates = [42.1379215, 25.1370926]
+const channels = [...getPMR(), ...await getRepeaters(coordinates), ...getSimplex()]
 
 channels.forEach((channel, index) => {
     channel.Location = (index + 1).toString()
