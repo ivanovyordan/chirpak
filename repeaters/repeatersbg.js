@@ -36,7 +36,7 @@ const getRepeater = async (id) => {
       repeater.Name = value
     }
 
-    if(key === 'Channel' && value.match(/R \d/)) {
+    if(key === 'Channel' && value.match(/^R\s?\d+$/)) {
       repeater.Name = value
     }
 

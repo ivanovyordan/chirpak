@@ -49,7 +49,7 @@ const sortRepeaters = (repeaters, startingPoint) => {
     const repeaterPoint = turf.point([repeater.lon, repeater.lat])
     repeater.distance = turf.distance(repeaterPoint, startingPoint)
 
-    if(repeater.Name.match(/R \d|R\d/) !== null) {
+    if(repeater.Name.match(/^R\s?\d+$/)) {
       mainRepeaters.push(repeater)
     }
     else {
