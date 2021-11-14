@@ -1,5 +1,5 @@
-import fetch from 'node-fetch'
-import * as cheerio from 'cheerio'
+import fetch from "node-fetch"
+import * as cheerio from "cheerio"
 
 const loadURL = async (url) => {
   const result = await fetch(url)
@@ -11,64 +11,69 @@ const loadURL = async (url) => {
 const getRepeater = async (id) => {
   const url = `http://www.repeaters.bg/repeater/view/id/${id}`
   const $ = await loadURL(url)
-  const rows = $('table > tbody tr')
+  const rows = $("table > tbody tr")
 
   const repeater = {
-    Name: '',
-    Frequency: '0.000000',
-    Duplex: 'split',
-    Offset: '0.000000',
-    Tone: '',
-    rToneFreq: '88.5',
-    cToneFreq: '88.5',
-    Mode: 'FM',
-    Comment: '',
-    lat: '',
-    lon: '',
-    height: ''
+    Name: "",
+    Frequency: "0.000000",
+    Duplex: "split",
+    Offset: "0.000000",
+    Tone: "",
+    rToneFreq: "88.5",
+    cToneFreq: "88.5",
+    Mode: "FM",
+    Comment: "",
+    lat: "",
+    lon: "",
+    height: ""
   }
 
   rows.each((_, row) => {
-    const key = $(row).find('th').text()
-    const value = $(row).find('td').text()
+    const key = $(row).find("th").text()
+    const value = $(row).find("td").text()
+    let mix = false
 
-    if(key === 'Callsign') {
+    if(key === "Callsign") {
       repeater.Name = value
     }
 
-    if(key === 'Channel' && value.match(/^R\s?\d+$/)) {
+    if(key === "Channel" && value.match(/^R\s?\d+$/)) {
       repeater.Name = value
     }
 
-    if(key === 'Output') {
+    if(key === "Channel" && value.includes("Mix")) {
+      mix = true
+    }
+
+    if(key === "Output") {
       repeater.Frequency = parseFloat(value).toFixed(6).toString()
     }
 
-    if(key === 'Input') {
+    if(key === "Input") {
       repeater.Offset = parseFloat(value).toFixed(6).toString()
     }
 
-    if(key === 'Tone' && value !== '0' && value !== '-') {
-      const tone = value.replace(',', '.').replace(/rx- (\d+.\d+).*/, '$1')
+    if(key === "Tone" && value !== "0" && value !== "-") {
+      const tone = value.replace(",", ".").replace(/rx- (\d+.\d+).*/, "$1")
 
-      repeater.Tone = 'Tone'
+      repeater.Tone = mix ? "TSQL" : "Tone"
       repeater.rToneFreq = tone
       repeater.cToneFreq = tone
     }
 
-    if(key === 'Location') {
+    if(key === "Location") {
       repeater.Comment = value
     }
 
-    if(key === 'Latitude') {
+    if(key === "Latitude") {
       repeater.lat = value
     }
 
-    if(key === 'Longitude') {
+    if(key === "Longitude") {
       repeater.lon = value
     }
 
-    if(key === 'Above Sea Level') {
+    if(key === "Above Sea Level") {
       repeater.height = value
     }
   })
@@ -85,7 +90,7 @@ const getPageRepeaters = async ($) => {
   const repeaters = []
   const ids = []
 
-  $('.keys span').each((_, element) => {
+  $(".keys span").each((_, element) => {
     ids.push($(element).text())
   })
 
@@ -110,7 +115,7 @@ export const getRepeaters = async () => {
     repeaters = [...repeaters, ...pageRepeaters]
 
     ++page
-    if($('.pager .btn:not(.hidden):last').hasClass('selected')) {
+    if($(".pager .btn:not(.hidden):last").hasClass("selected")) {
       hasNextPage = false
     }
   }

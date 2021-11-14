@@ -29,7 +29,7 @@ const getRepeater = (addressPoint) => {
         Frequency: receive.toFixed(6).toString(),
         Duplex: 'split',
         Offset: transmit.toFixed(6).toString(),
-        Tone: toneFreq !== '' ? 'Tone' : '',
+        Tone: toneFreq !== '' ? 'TSQL' : '',
         rToneFreq: toneFreq !== '' ? toneFreq : '88.5',
         cToneFreq: toneFreq !== '' ? toneFreq : '88.5',
         Mode: 'FM',
