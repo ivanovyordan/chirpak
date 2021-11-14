@@ -1,7 +1,7 @@
 const getSimplex = () => {
     return [
         {
-            Name: '145.300',
+            Name: '145300',
             Frequency: '145.300000',
             Duplex: '',
             Offset: '0.000000',
@@ -12,7 +12,7 @@ const getSimplex = () => {
             Comment: 'Simplex 2 M',
         },
         {
-            Name: '145.400',
+            Name: '145400',
             Frequency: '145.400000',
             Duplex: '',
             Offset: '0.000000',
@@ -23,7 +23,7 @@ const getSimplex = () => {
             Comment: 'Simplex 2 M',
         },
         {
-            Name: '145.450',
+            Name: '145450',
             Frequency: '145.450000',
             Duplex: '',
             Offset: '0.000000',
@@ -34,7 +34,7 @@ const getSimplex = () => {
             Comment: 'Simplex 2 M',
         },
         {
-            Name: '145.500',
+            Name: '145500',
             Frequency: '145.500000',
             Duplex: '',
             Offset: '0.000000',
@@ -45,7 +45,7 @@ const getSimplex = () => {
             Comment: 'Simplex 2 M',
         },
         {
-            Name: '145.550',
+            Name: '145550',
             Frequency: '145.550000',
             Duplex: '',
             Offset: '0.000000',
@@ -55,30 +55,44 @@ const getSimplex = () => {
             Mode: 'FM',
             Comment: 'Simplex 2 M',
         },
+
+
+
         {
-            Name: '145.800',
-            Frequency: '145.800000',
+            Name: '433300',
+            Frequency: '433.300000',
             Duplex: '',
             Offset: '0.000000',
             Tone: '',
             rToneFreq: '88.5',
             cToneFreq: '88.5',
             Mode: 'FM',
-            Comment: 'Simplex 2 M',
+            Comment: 'Simplex70 CM',
         },
         {
-            Name: '433.300',
-            Frequency: '433.300000',
+            Name: '433400',
+            Frequency: '433.400000',
             Duplex: '',
             Offset: '0.000000',
-            Tone: 'Tone',
+            Tone: '',
             rToneFreq: '88.5',
             cToneFreq: '88.5',
             Mode: 'FM',
-            Comment: 'Simplex 70 CM',
+            Comment: 'Simplex70 CM',
         },
         {
-            Name: '433.500',
+            Name: '433450',
+            Frequency: '433.450000',
+            Duplex: '',
+            Offset: '0.000000',
+            Tone: '',
+            rToneFreq: '88.5',
+            cToneFreq: '88.5',
+            Mode: 'FM',
+            Comment: 'Simplex70 CM',
+        },
+        {
+            Name: '433500',
             Frequency: '433.500000',
             Duplex: '',
             Offset: '0.000000',
@@ -86,7 +100,18 @@ const getSimplex = () => {
             rToneFreq: '88.5',
             cToneFreq: '88.5',
             Mode: 'FM',
-            Comment: 'Simplex 70 CM',
+            Comment: 'Simplex70 CM',
+        },
+        {
+            Name: '433550',
+            Frequency: '433.550000',
+            Duplex: '',
+            Offset: '0.000000',
+            Tone: '',
+            rToneFreq: '88.5',
+            cToneFreq: '88.5',
+            Mode: 'FM',
+            Comment: 'Simplex70 CM',
         },
     ]
 }
