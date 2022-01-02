@@ -23,6 +23,7 @@ const getRepeater = async (id) => {
     cToneFreq: "88.5",
     Mode: "FM",
     Comment: "",
+    mix: false,
     lat: "",
     lon: "",
     height: ""
@@ -31,7 +32,6 @@ const getRepeater = async (id) => {
   rows.each((_, row) => {
     const key = $(row).find("th").text()
     const value = $(row).find("td").text()
-    let mix = false
 
     if(key === "Callsign") {
       repeater.Name = value
@@ -41,8 +41,8 @@ const getRepeater = async (id) => {
       repeater.Name = value
     }
 
-    if(key === "Channel" && value.includes("Mix")) {
-      mix = true
+    if(key === "Channel" && value.match(/mix/i)) {
+      repeater.mix = true
     }
 
     if(key === "Output") {
@@ -56,7 +56,7 @@ const getRepeater = async (id) => {
     if(key === "Tone" && value !== "0" && value !== "-") {
       const tone = value.replace(",", ".").replace(/rx- (\d+.\d+).*/, "$1")
 
-      repeater.Tone = mix ? "TSQL" : "Tone"
+      repeater.Tone = repeater.mix ? "TSQL" : "Tone"
       repeater.rToneFreq = tone
       repeater.cToneFreq = tone
     }
