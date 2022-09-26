@@ -10,50 +10,38 @@ const getAddressPoints = async () => {
     return eval(lzVar)
 }
 
-const getRepeater = (addressPoint) => {
+const parse = (addressPoint) => {
     const repeater = {
-        Name: "",
-        Frequency: "0.000000",
-        Duplex: "split",
-        Offset: "0.000000",
-        Tone: "",
-        rToneFreq: "88.5",
-        cToneFreq: "88.5",
-        Mode: "FM",
-        Comment: "",
-        mix: false,
+        name: "",
+        rx: "0.000000",
+        tx: "0.000000",
+        tone: "",
         lat: "",
         lon: "",
         height: ""
     }
 
     const details = addressPoint[3]
+
+    let name = addressPoint[2]
+    const type = details.match(/<b>R\d+<\/b>/)
+    if (type !== null) name = type[0].replace(/<\/?b>/g, "") + name.replace("LZ0", "")
+    repeater.name = name
+
     const rx = details.match(/RX: <b>\s?[\d.]+\s?<\/b>/)
     const tx = details.match(/TX: <b>\s?[\d.]+\s?<\/b>/)
 
     if (rx === null || tx === null) return
 
-    let name = addressPoint[2]
-    const type = details.match(/<b>R\d+<\/b>/)
-    if (type !== null) name = type[0].replace(/<\/?b>/g, "") + name.replace("LZ0", "")
-    repeater.Name = name
-
     const receive = parseFloat(rx[0].replace(/[^\d.]/g, ""))
-    repeater.Frequency = receive.toFixed(6).toString()
+    repeater.rx = receive.toFixed(6).toString()
 
     const transmit = parseFloat(tx[0].replace(/[^\d.]/g, ""))
-    repeater.Offset = transmit.toFixed(6).toString()
+    repeater.tx = transmit.toFixed(6).toString()
 
     let tone = details.match(/Тон: <b>\s?[\d.]+\s?<\/b>/)
-    if (tone !== null) {
-        const toneFreq = tone === null ? "" : tone[0].replace(/[^\d.]/g, "")
+    if (tone !== null) repeater.tone = tone[0].replace(/[^\d.]/g, "")
 
-        repeater.Tone = "Tone"
-        repeater.rToneFreq = toneFreq
-        repeater.cToneFreq = toneFreq
-    }
-
-    repeater.Comment = addressPoint[4]
     repeater.lon = addressPoint[1]
     repeater.lat = addressPoint[0]
     repeater.height = parseInt(details.match(/(\d+) м/)[0].replace(/[^\d]/g, ""))
@@ -61,12 +49,12 @@ const getRepeater = (addressPoint) => {
     return repeater
 }
 
-export const getRepeaters = async () => {
+export const getAll = async () => {
     const repeaters = []
     const addressPoints = await getAddressPoints()
 
     addressPoints.forEach((addressPoint) => {
-        const repeater = getRepeater(addressPoint)
+        const repeater = parse(addressPoint)
 
         if (repeater) repeaters.push(repeater)
     })

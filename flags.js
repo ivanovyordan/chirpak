@@ -2,32 +2,32 @@ import args from "args"
 
 args
     .option(
-        "pmr",
-        "Include PRM",
+        ["p", "no-prm"],
+        "Do not include PRM frequencies",
         false,
     )
     .option(
-        "no-national",
+        ["n", "no-national"],
         "Do not include national repeaters",
         false,
     )
     .option(
-        "no-local",
+        ["l", "no-local"],
         "Do not include local repeaters",
         false,
     )
     .option(
-        "no-simplex",
-        "Do not include simplex/direct frequencies",
+        ["d", "no-simplex"],
+        "Do not include simplex frequencies",
         false,
     )
     .option(
-        "no-special",
+        ["s", "no-special"],
         "Do not include special frequencies",
         false,
     )
     .option(
-        "coordinates",
+        ["c", "coordinates"],
         "Station coordinates (<lon,lat>)",
         "25.1370926,42.1379215",
         coordinates => coordinates.split(","),

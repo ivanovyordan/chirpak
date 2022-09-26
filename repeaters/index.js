@@ -1,15 +1,12 @@
 import * as turf from '@turf/turf'
 
 import * as LZFree from "./lzfree.js"
-import * as RepeatersBG from "./repeatersbg.js"
 
-const getUniqueRepeaters = (repeaters) => {
+const getUnique = (repeaters) => {
     const unique = []
 
     repeaters.forEach((repeater) => {
-        if (!unique.some(
-            r => r.Frequency === repeater.Frequency && r.cToneFreq === repeater.cToneFreq
-        )) {
+        if (!unique.some(r => r.rx === repeater.rx)) {
             unique.push(repeater)
         }
     })
@@ -17,45 +14,41 @@ const getUniqueRepeaters = (repeaters) => {
     return unique
 }
 
-const compareRepeaters = (first, second) => {
-    if (first.isNational) {
-        const firstNumber = parseInt(first.Name.substring(1, first.Name.length - 3))
-        const secondNumber = parseInt(second.Name.substring(1, second.Name.length - 3))
+const sortNational = (repeaters) => {
+    return repeaters.sort((first, second) => {
+        const firstNumber = parseInt(first.name.substring(1, first.name.length - 3))
+        const secondNumber = parseInt(second.name.substring(1, second.name.length - 3))
 
         if (firstNumber < secondNumber) return -1
         if (firstNumber > secondNumber) return 1
-    }
 
-    if (first.distance < second.distance) return -1
-    if (first.distance > second.distance) return 1
-    return 0
+        return 0
+    })
 }
 
-const sortRepeaters = (repeaters, startingPoint) => {
-    return repeaters.sort((first, second) => compareRepeaters(first, second))
+const sortLocal = (repeaters) => {
+    return repeaters.sort((first, second) => {
+        if (first.distance < second.distance) return -1
+        if (first.distance > second.distance) return 1
+        return 0
+    })
 }
 
-const splitRepeaters = (repeaters, startingPoint) => {
+const categorise = (repeaters, startingPoint) => {
     const nationalRepeaters = []
     const localRepeaters = []
 
-    repeaters.forEach((repeater) => {
+    for (const repeater of repeaters) {
         const repeaterPoint = turf.point([repeater.lon, repeater.lat])
-
         repeater.distance = turf.distance(repeaterPoint, startingPoint)
-        repeater.isNational = repeater.Name.match(/^R.*$/)
 
-        if (repeater.Name === "LZ0BSK") {
-            repeater.Mode = "NFM"
-        }
-
-        if (repeater.isNational) {
+        if (repeater.name.match(/^R.*$/)) {
             nationalRepeaters.push(repeater)
         }
         else {
             localRepeaters.push(repeater)
         }
-    })
+    }
 
     return {
         nationalRepeaters,
@@ -63,18 +56,15 @@ const splitRepeaters = (repeaters, startingPoint) => {
     }
 }
 
-const getRepeaters = async (startingPoint, method = "lzfree") => {
-    const rawRepeaters = method === "repeatersbg" ?
-        await RepeatersBG.getRepeaters() :
-        await LZFree.getRepeaters()
+const getRepeaters = async (coordinates) => {
+    const rawRepeaters = await LZFree.getAll()
+    const startingPoint = turf.point(coordinates)
 
-    startingPoint = turf.point(startingPoint)
-
-    const { nationalRepeaters, localRepeaters } = splitRepeaters(rawRepeaters, startingPoint)
-    const sortedNationalRepeaters = sortRepeaters(nationalRepeaters, startingPoint)
-    const sortedLocalRepeaters = sortRepeaters(localRepeaters, startingPoint)
-    const uniqueNationalRepeaters = getUniqueRepeaters(sortedNationalRepeaters)
-    const uniqueLocalRepeaters = getUniqueRepeaters(sortedLocalRepeaters)
+    const { nationalRepeaters, localRepeaters } = categorise(rawRepeaters, startingPoint)
+    const sortedNationalRepeaters = sortNational(nationalRepeaters, startingPoint)
+    const sortedLocalRepeaters = sortLocal(localRepeaters, startingPoint)
+    const uniqueNationalRepeaters = getUnique(sortedNationalRepeaters)
+    const uniqueLocalRepeaters = getUnique(sortedLocalRepeaters)
 
     return {
         national: uniqueNationalRepeaters,

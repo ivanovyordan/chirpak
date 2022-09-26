@@ -17,24 +17,47 @@ if (!flags.noLocal) {
     channels = [...channels, ...repeaters.local]
 }
 
-if (!flags.simplex) {
+if (!flags.noSimplex) {
     channels = [...channels, ...getSimplex()]
 }
 
-if (!flags.special) {
+if (!flags.noSpecial) {
     channels = [...channels, ...getSpecial()]
 }
 
-if (flags.pmr) {
+if (!flags.noPmr) {
     channels = [...channels, ...getPMR()]
 }
 
 channels.forEach((channel, index) => {
     channel.Location = (index + 1).toString()
+    channel.Name = channel.name
+    channel.Frequency = channel.rx
+
+    if (channel.rx === channel.tx) {
+        channel.Duplex = ""
+        channel.Offset = "0.000000"
+    } else if (channel.rx.split("")[0] !== channel.tx.split("")[0]) {
+        channel.Duplex = "split"
+        channel.Offset = channel.tx
+    } else if (channel.rx > channel.tx) {
+        channel.Duplex = "-"
+        channel.Offset = (channel.rx - channel.tx).toFixed(6).toString()
+    } else {
+        channel.Duplex = "+"
+        channel.Offset = (channel.tx - channel.rx).toFixed(6).toString()
+    }
+
+    channel.Tone = channel.tone !== "" ? "Tone" : ""
+    channel.rToneFreq = channel.tone !== "" ? channel.tone : "88.5"
+    channel.cToneFreq = channel.tone !== "" ? channel.tone : "88.5"
+
     channel.DtcsCode = "023"
     channel.DtcsPolarity = "NN"
+    channel.Mode = "FM"
     channel.TStep = "5.00"
     channel.Skip = ""
+    channel.Comment = ""
     channel.MYCALL = ""
     channel.URCALL = ""
     channel.RPT1CALL = ""
