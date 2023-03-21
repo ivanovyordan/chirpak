@@ -1,4 +1,5 @@
 .*
 !.gitignore
+!.dockerignore
 node_modules
 file.csv
