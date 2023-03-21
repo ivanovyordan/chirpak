@@ -2,11 +2,6 @@ import args from "args"
 
 args
     .option(
-        ["p", "no-prm"],
-        "Do not include PRM frequencies",
-        false,
-    )
-    .option(
         ["n", "no-national"],
         "Do not include national repeaters",
         false,
@@ -19,6 +14,11 @@ args
     .option(
         ["d", "no-simplex"],
         "Do not include simplex frequencies",
+        false,
+    )
+    .option(
+        ["p", "no-pmr"],
+        "Do not include PRM frequencies",
         false,
     )
     .option(
