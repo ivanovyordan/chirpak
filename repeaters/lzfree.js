@@ -1,62 +1,46 @@
 import fetch from "node-fetch"
 
-const getAddressPoints = async () => {
-    const website = await fetch("https://lz.free.bg")
-    const content = await website.text()
+const getRawRepeaters = async () => {
+    const response = await fetch("https://varna.radio/reps.json")
+    const text = await response.text()
+    const repeaters = JSON.parse(text.trim()).repeaters
 
-    const regex = new RegExp(/(var addressPoints = )(\[.*?\]\n\n)/s)
-    const lzVar = content.match(regex)[0].replace("var addressPoints =", "")
-
-    return eval(lzVar)
+    return Object.values(repeaters).filter(repeater => repeater.mode.analog === true || repeater.mode.parrot)
 }
 
-const parse = (addressPoint) => {
-    const repeater = {
-        name: "",
-        rx: "0.000000",
-        tx: "0.000000",
-        tone: "",
-        lat: "",
-        lon: "",
-        height: ""
+const getName = (raw) => {
+    const frequency = parseFloat(raw.rx).toFixed(4) * 10000;
+    let name = raw.callsign
+
+    if (frequency >= 1452000 && frequency < 1454000 && (frequency - 1452000) % 250 == 0) { // VHF R8-R15
+        name = "R" + parseInt(((frequency - 1452000) / 250) + 8)
+    } else if (frequency >= 1456000 && frequency < 1460000 && (frequency - 1456000) % 250 == 0) { // VHF R0-R7
+        name = "R" + parseInt((frequency - 1456000) / 250)
     }
 
-    const details = addressPoint[3]
+    return name;
+}
 
-    let name = addressPoint[2]
-    const type = details.match(/<b>R\d+<\/b>/)
-    if (type !== null) name = type[0].replace(/<\/?b>/g, "") + name.replace("LZ0", "")
-    repeater.name = name
-
-    const rx = details.match(/RX: <b>\s?[\d.]+\s?<\/b>/)
-    const tx = details.match(/TX: <b>\s?[\d.]+\s?<\/b>/)
-
-    if (rx === null || tx === null) return
-
-    const receive = parseFloat(rx[0].replace(/[^\d.]/g, ""))
-    repeater.rx = receive.toFixed(6).toString()
-
-    const transmit = parseFloat(tx[0].replace(/[^\d.]/g, ""))
-    repeater.tx = transmit.toFixed(6).toString()
-
-    let tone = details.match(/Тон: <b>\s?[\d.]+\s?<\/b>/)
-    if (tone !== null) repeater.tone = tone[0].replace(/[^\d.]/g, "")
-
-    repeater.lon = addressPoint[1]
-    repeater.lat = addressPoint[0]
-    repeater.height = parseInt(details.match(/(\d+) м/)[0].replace(/[^\d]/g, ""))
+const parse = (raw) => {
+    const repeater = {
+        name: getName(raw),
+        rx: raw.rx.toFixed(6),
+        tx: raw.tx.toFixed(6),
+        tone: raw.tone || "",
+        lat: raw.lat,
+        lon: raw.lon,
+        altitude: raw.altitude
+    }
 
     return repeater
 }
 
 export const getAll = async () => {
     const repeaters = []
-    const addressPoints = await getAddressPoints()
+    const raw = await getRawRepeaters()
 
-    addressPoints.forEach((addressPoint) => {
-        const repeater = parse(addressPoint)
-
-        if (repeater) repeaters.push(repeater)
+    raw.forEach((repeater) => {
+        repeaters.push(parse(repeater))
     })
 
     return repeaters
