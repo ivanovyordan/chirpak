@@ -2,3 +2,4 @@
 !.gitignore
 !.dockerignore
 node_modules
+chirp.csv

@@ -31,6 +31,11 @@ args
         "Station coordinates (<lon,lat>)",
         "25.1370926,42.1379215",
         coordinates => coordinates.split(","),
+)
+    .option(
+        ["f", "no-file"],
+        "Do not generate a CSV file. Print output to STDOUT instead.",
+        false,
     )
 
 export default args.parse(process.argv)

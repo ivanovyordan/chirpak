@@ -1,3 +1,5 @@
+import * as fs from "fs/promises"
+
 import flags from "./flags.js"
 import getRepeaters from "./repeaters/index.js"
 import getSimplex from "./simplex.js"
@@ -119,4 +121,13 @@ const csvString = [
     .map(element => element.join(","))
     .join("\n")
 
-console.log(csvString)
+if (flags.noFile) {
+    console.log(csvString)
+    process.exit(0)
+}
+
+try {
+    await fs.writeFile("chirp.csv", csvString)
+} catch (err) {
+    console.log(err)
+}
