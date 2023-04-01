@@ -37,7 +37,10 @@ channels.forEach((channel, index) => {
     channel.Name = channel.name
     channel.Frequency = channel.rx
 
-    if (channel.rx === channel.tx) {
+    if (channel.tx === "") {
+        channel.Duplex = "off"
+        channel.Offset = "0.000000"
+    } else if (channel.rx === channel.tx) {
         channel.Duplex = ""
         channel.Offset = "0.000000"
     } else if (channel.rx.split("")[0] !== channel.tx.split("")[0]) {
@@ -55,11 +58,12 @@ channels.forEach((channel, index) => {
     channel.rToneFreq = channel.tone !== "" ? channel.tone : "88.5"
     channel.cToneFreq = channel.tone !== "" ? channel.tone : "88.5"
 
+    channel.Skip = channel.skip || ""
+
     channel.DtcsCode = "023"
     channel.DtcsPolarity = "NN"
     channel.Mode = "FM"
     channel.TStep = "5.00"
-    channel.Skip = ""
     channel.Comment = ""
     channel.MYCALL = ""
     channel.URCALL = ""

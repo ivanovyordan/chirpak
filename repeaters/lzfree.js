@@ -27,6 +27,7 @@ const parse = (raw) => {
         rx: raw.rx.toFixed(6),
         tx: raw.tx.toFixed(6),
         tone: raw.tone || "",
+        skip: "",
         lat: raw.lat,
         lon: raw.lon,
         altitude: raw.altitude
