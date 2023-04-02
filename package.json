@@ -1,12 +1,12 @@
 {
-    "name": "radio",
+    "name": "chirpak",
     "version": "2.0.0",
     "description": "",
     "main": "index.js",
     "type": "module",
     "keywords": [],
     "author": "Yordan Ivanov <mail@ivanovyordan.com> (https://www.ivanovyordan.com/)",
-    "license": "ISC",
+    "license": "MIT",
     "scripts": {
         "start": "node index.js"
     },
