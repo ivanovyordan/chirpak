@@ -2,11 +2,6 @@ import args from "args"
 
 args
     .option(
-        ["p", "no-prm"],
-        "Do not include PRM frequencies",
-        false,
-    )
-    .option(
         ["n", "no-national"],
         "Do not include national repeaters",
         false,
@@ -22,6 +17,11 @@ args
         false,
     )
     .option(
+        ["p", "no-pmr"],
+        "Do not include PRM frequencies",
+        false,
+    )
+    .option(
         ["s", "no-special"],
         "Do not include special frequencies",
         false,
@@ -31,6 +31,11 @@ args
         "Station coordinates (<lon,lat>)",
         "25.1370926,42.1379215",
         coordinates => coordinates.split(","),
+)
+    .option(
+        ["f", "no-file"],
+        "Do not generate a CSV file. Print output to STDOUT instead.",
+        false,
     )
 
 export default args.parse(process.argv)

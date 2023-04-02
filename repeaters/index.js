@@ -16,8 +16,8 @@ const getUnique = (repeaters) => {
 
 const sortNational = (repeaters) => {
     return repeaters.sort((first, second) => {
-        const firstNumber = parseInt(first.name.substring(1, first.name.length - 3))
-        const secondNumber = parseInt(second.name.substring(1, second.name.length - 3))
+        const firstNumber = parseInt(first.name.replace("R", ""))
+        const secondNumber = parseInt(second.name.replace("R", ""))
 
         if (firstNumber < secondNumber) return -1
         if (firstNumber > secondNumber) return 1
@@ -42,7 +42,7 @@ const categorise = (repeaters, startingPoint) => {
         const repeaterPoint = turf.point([repeater.lon, repeater.lat])
         repeater.distance = turf.distance(repeaterPoint, startingPoint)
 
-        if (repeater.name.match(/^R.*$/)) {
+        if (repeater.name.charAt(0) == "R") {
             nationalRepeaters.push(repeater)
         }
         else {

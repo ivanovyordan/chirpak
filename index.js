@@ -1,13 +1,17 @@
-import * as createCsvWriter from "csv-writer"
+import * as fs from "fs/promises"
 
 import flags from "./flags.js"
 import getRepeaters from "./repeaters/index.js"
 import getSimplex from "./simplex.js"
-import getSpecial from "./special.js"
 import getPMR from "./pmr.js"
+import getSpecial from "./special.js"
 
 let channels = []
-const repeaters = await getRepeaters(flags.coordinates)
+let repeaters = []
+
+if (!flags.noNational || !flags.noLocal) {
+    repeaters = await getRepeaters(flags.coordinates)
+}
 
 if (!flags.noNational) {
     channels = [...channels, ...repeaters.national]
@@ -21,20 +25,24 @@ if (!flags.noSimplex) {
     channels = [...channels, ...getSimplex()]
 }
 
+if (!flags.noPmr) {
+    channels = [...channels, ...getPMR()]
+}
+
 if (!flags.noSpecial) {
     channels = [...channels, ...getSpecial()]
 }
 
-if (!flags.noPmr) {
-    channels = [...channels, ...getPMR()]
-}
 
 channels.forEach((channel, index) => {
     channel.Location = (index + 1).toString()
     channel.Name = channel.name
     channel.Frequency = channel.rx
 
-    if (channel.rx === channel.tx) {
+    if (channel.tx === "") {
+        channel.Duplex = "off"
+        channel.Offset = "0.000000"
+    } else if (channel.rx === channel.tx) {
         channel.Duplex = ""
         channel.Offset = "0.000000"
     } else if (channel.rx.split("")[0] !== channel.tx.split("")[0]) {
@@ -52,11 +60,12 @@ channels.forEach((channel, index) => {
     channel.rToneFreq = channel.tone !== "" ? channel.tone : "88.5"
     channel.cToneFreq = channel.tone !== "" ? channel.tone : "88.5"
 
+    channel.Skip = channel.skip || ""
+
     channel.DtcsCode = "023"
     channel.DtcsPolarity = "NN"
     channel.Mode = "FM"
     channel.TStep = "5.00"
-    channel.Skip = ""
     channel.Comment = ""
     channel.MYCALL = ""
     channel.URCALL = ""
@@ -65,31 +74,60 @@ channels.forEach((channel, index) => {
     channel.DVCODE = ""
 })
 
-const csvWriter = createCsvWriter.createObjectCsvWriter({
-    path: "file.csv",
-    header: [
-        { id: "Location", title: "Location" },
-        { id: "Name", title: "Name" },
-        { id: "Frequency", title: "Frequency" },
-        { id: "Duplex", title: "Duplex" },
-        { id: "Offset", title: "Offset" },
-        { id: "Tone", title: "Tone" },
-        { id: "rToneFreq", title: "rToneFreq" },
-        { id: "cToneFreq", title: "cToneFreq" },
-        { id: "DtcsCode", title: "DtcsCode" },
-        { id: "DtcsPolarity", title: "DtcsPolarity" },
-        { id: "Mode", title: "Mode" },
-        { id: "TStep", title: "TStep" },
-        { id: "Skip", title: "Skip" },
-        { id: "Comment", title: "Comment" },
-        { id: "MYCALL", title: "MYCALL" },
-        { id: "URCALL", title: "URCALL" },
-        { id: "RPT1CALL", title: "RPT1CALL" },
-        { id: "RPT2CALL", title: "RPT2CALL" },
-        { id: "DVCODE", title: "DVCODE" },
-    ]
-});
+const csvString = [
+    [
+        "Location",
+        "Name",
+        "Frequency",
+        "Duplex",
+        "Offset",
+        "Tone",
+        "rToneFreq",
+        "cToneFreq",
+        "DtcsCode",
+        "DtcsPolarity",
+        "Mode",
+        "TStep",
+        "Skip",
+        "Comment",
+        "MYCALL",
+        "URCALL",
+        "RPT1CALL",
+        "RPT2CALL",
+        "DVCODE",
+    ],
+    ...channels.map(channel => [
+        channel.Location,
+        channel.Name,
+        channel.Frequency,
+        channel.Duplex,
+        channel.Offset,
+        channel.Tone,
+        channel.rToneFreq,
+        channel.cToneFreq,
+        channel.DtcsCode,
+        channel.DtcsPolarity,
+        channel.Mode,
+        channel.TStep,
+        channel.Skip,
+        channel.Comment,
+        channel.MYCALL,
+        channel.URCALL,
+        channel.RPT1CALL,
+        channel.RPT2CALL,
+        channel.DVCODE,
+    ])
+]
+    .map(element => element.join(","))
+    .join("\n")
 
+if (flags.noFile) {
+    console.log(csvString)
+    process.exit(0)
+}
 
-await csvWriter.writeRecords(channels)
-console.log("DONE")
+try {
+    await fs.writeFile("chirp.csv", csvString)
+} catch (err) {
+    console.log(err)
+}
