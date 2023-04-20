@@ -21,6 +21,13 @@ const getSpecial = () => {
             tone: "",
             skip: "",
         },
+        {
+            name: "APRS",
+            rx: "144.800",
+            tx: "144.800",
+            tone: "",
+            skip: "",
+        },
     ]
 }
 
